@@ -20,7 +20,11 @@ class MainForm(Frame):
         
         self.lblO2 = Label(self.master, text = "O2: 0%")
         self.lblO2.pack()
-        self.lblO2.place(x = 10, y = 30)    
+        self.lblO2.place(x = 27, y = 30)
+
+        self.lblTemp = Label(self.master, text = u"Temp: 0 \N{DEGREE SIGN}F")
+        self.lblTemp.pack()
+        self.lblTemp.place(x = 10, y = 50)
 
     def updateChart(self):
         heartRateFigure = Figure(figsize=(7, 5))
@@ -33,14 +37,14 @@ class MainForm(Frame):
         self.heartRateCanvas.show()
         self.heartRateCanvasWidget = self.heartRateCanvas.get_tk_widget()
         self.heartRateCanvasWidget.pack()
-        self.heartRateCanvasWidget.place(x = 10, y = 60)
+        self.heartRateCanvasWidget.place(x = 10, y = 80)
 
 def main():
     height = 600
-    width = 485
+    width = 500
     root = Tk()
     app = MainForm(master=root)
-    app.master.title("Py-TriCorder")
+    app.master.title("Medical TriCorder")
     app.master.geometry(str(height) + "x" + str(width))
     app.master.minsize(height, width)
     app.master.maxsize(height, width)
