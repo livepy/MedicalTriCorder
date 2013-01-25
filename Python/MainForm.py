@@ -5,10 +5,10 @@ from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-class MainForm():
+class MainForm(Frame):
     def __init__(self, master, serialPort):
         Frame.__init__(self, master)
-        
+
         self.heartBeats = []
         self.O2 = []
 
@@ -17,39 +17,38 @@ class MainForm():
         #try:
         self.serialPort = serial.Serial(self.selectedSerialPort, 38400, timeout = 1)
         self.serialPort.write("\xA1")
-        print "HSU Model Data: " + self.serialPort.readline();
+        self.hsuModel = self.serialPort.readline();
 
         self.pack()
         self.createWidgets()
 
-        self.heartBeats.append(int(self.getBPM()))
-        self.heartBeats.append(int(self.getBPM()))
-        
-        self.O2.append(int(self.getO2()))
-        self.O2.append(int(self.getO2()))
         self.updateChart()
         self.updateData()
-
+        
         #except serial.SerialException:
             #tkMessageBox.showerror("HSU Connection Error", "Error connecting to HSU")
             #self.master.destroy()
     
     def createWidgets(self):
-        self.lblPulse = Label(self.master, text = "Pulse: 0 bpm")
+        self.lblPulse = Label(self.master, text = "Pulse: 0 BPM")
         self.lblPulse.pack()
-        self.lblPulse.place(x = 10, y = 10)
+        self.lblPulse.place(x = 15, y = 10)
         
-        self.lblO2 = Label(self.master, text = "O2: 0%")
+        self.lblO2 = Label(self.master, text = "SpO2: 0%")
         self.lblO2.pack()
-        self.lblO2.place(x = 27, y = 30)
+        self.lblO2.place(x = 15, y = 30)
 
         self.lblTemp = Label(self.master, text = u"Temp: 0 \N{DEGREE SIGN}F")
         self.lblTemp.pack()
         self.lblTemp.place(x = 10, y = 50)
-		
+
+        self.lblModel = Label(self.master, text = "HSU Model: " + self.hsuModel)
+        self.lblModel.pack()
+        self.lblModel.place(x = 15, y = 490)
+	
     def updateChart(self):
         heartRateFigure = Figure(figsize=(7, 5))
-        bpmPlot = heartRateFigure.add_subplot(111, title="Heart Rate (BPM) & O2(%)", xlabel = "Time", axisbg="black")
+        bpmPlot = heartRateFigure.add_subplot(111, title="Heart Rate (BPM) & SpO2(%)", xlabel = "Time", axisbg="black")
         bpmObject, = bpmPlot.plot(self.heartBeats, color='red')
         o2Object, = bpmPlot.plot(self.O2, color='yellow')
         #bpmPlot.legend([bpmObject, o2Object], ["BPM", "O2"], "best")
@@ -61,10 +60,21 @@ class MainForm():
         self.heartRateCanvasWidget.place(x = 10, y = 80)
 		
     def updateData(self):
-	self.heartBeats.append(self.getBPM())
-	self.O2.append(self.getO2())
-	print "Got data..."
-		
+        latestBPM = self.getBPM()
+        latestSPO2 = self.getO2()
+        latestTemp = self.getTemp()
+
+        self.heartBeats.append(latestBPM)
+        self.O2.append(latestSPO2)
+        
+        self.updateChart()
+        
+        self.lblPulse.config(text = "Pulse: " + latestBPM + " BPM")
+        self.lblO2.config(text = "SpO2: " + latestSPO2 + "%")
+        self.lblTemp.config(text = "Temp: " + latestTemp + u" \N{DEGREE SIGN}F")
+        
+        self.after(1000, self.updateData)        
+        
     def getBPM(self):
         self.serialPort.write("\xB1")
         return self.serialPort.readline().rstrip()
@@ -72,3 +82,7 @@ class MainForm():
     def getO2(self):
         self.serialPort.write("\xB2")
         return self.serialPort.readline().rstrip()
+
+    def getTemp(self):
+        self.serialPort.write("\xB3")
+        return self.serialPort.readline().rstrip()        

@@ -16,6 +16,7 @@ def showSetup():
     root = Tk()
     setupApp = BTSetup.BTSetup(master = root)
     setupApp.master.title("Medical TriCorder - Setup")
+    setupApp.master.wm_iconbitmap("tricorder.ico")
     setupApp.master.geometry(str(width) + "x" + str(height))
     setupApp.master.minsize(width, height)
     setupApp.master.maxsize(width, height)
@@ -28,19 +29,20 @@ def showSetup():
         showMainForm(setupApp.selectedPort)
     
 def showMainForm(serialPort):
-    height = 500
+    height = 520
     width = 600
     
-    try:
-        root = Tk()
-        app = MainForm.MainForm(master = root, serialPort = serialPort)
-        app.master.title("Medical TriCorder - Connected to Hand Scanner Unit")
-        app.master.geometry(str(width) + "x" + str(height))
-        app.master.minsize(width, height)
-        app.master.maxsize(width, height)
-        app.mainloop()
-    except:
-        pass
+    #try:
+    root = Tk()
+    app = MainForm.MainForm(master = root, serialPort = serialPort)
+    app.master.title("Medical TriCorder - Connected to Hand Scanner Unit")
+    app.master.wm_iconbitmap("tricorder.ico")
+    app.master.geometry(str(width) + "x" + str(height))
+    app.master.minsize(width, height)
+    app.master.maxsize(width, height)
+    app.mainloop()
+    #except:
+        #pass
 
 if __name__ == "__main__":
     main()
