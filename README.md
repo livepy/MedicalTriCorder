@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Medical TriCorder
 ================
 
