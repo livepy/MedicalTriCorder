@@ -1,11 +1,11 @@
 import serial
+import thread
 import tkMessageBox
-import time
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-class MainForm(Frame):
+class MainForm():
     def __init__(self, master, serialPort):
         Frame.__init__(self, master)
         
@@ -28,9 +28,8 @@ class MainForm(Frame):
         self.O2.append(int(self.getO2()))
         self.O2.append(int(self.getO2()))
         self.updateChart()
+        self.updateData()
 
-        #time.sleep(2)
-                
         #except serial.SerialException:
             #tkMessageBox.showerror("HSU Connection Error", "Error connecting to HSU")
             #self.master.destroy()
@@ -47,7 +46,7 @@ class MainForm(Frame):
         self.lblTemp = Label(self.master, text = u"Temp: 0 \N{DEGREE SIGN}F")
         self.lblTemp.pack()
         self.lblTemp.place(x = 10, y = 50)
-
+		
     def updateChart(self):
         heartRateFigure = Figure(figsize=(7, 5))
         bpmPlot = heartRateFigure.add_subplot(111, title="Heart Rate (BPM) & O2(%)", xlabel = "Time", axisbg="black")
@@ -60,7 +59,12 @@ class MainForm(Frame):
         self.heartRateCanvasWidget = self.heartRateCanvas.get_tk_widget()
         self.heartRateCanvasWidget.pack()
         self.heartRateCanvasWidget.place(x = 10, y = 80)
-
+		
+    def updateData(self):
+	self.heartBeats.append(self.getBPM())
+	self.O2.append(self.getO2())
+	print "Got data..."
+		
     def getBPM(self):
         self.serialPort.write("\xB1")
         return self.serialPort.readline().rstrip()
