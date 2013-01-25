@@ -1,11 +1,12 @@
 import serial
 import tkMessageBox
+import time
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 class MainForm(Frame):
-    def __init__(self, master = None, serialPort = None):
+    def __init__(self, master, serialPort):
         Frame.__init__(self, master)
         
         self.heartBeats = []
@@ -13,16 +14,26 @@ class MainForm(Frame):
 
         self.selectedSerialPort = serialPort
 
-        try:
-            self.serialPort = serial.Serial(self.selectedSerialPort, 38400, timeout = 1)
-            self.serialPort.write("Hello, world!") #BlueTooth Test
+        #try:
+        self.serialPort = serial.Serial(self.selectedSerialPort, 38400, timeout = 1)
+        self.serialPort.write("\xA1")
+        print "HSU Model Data: " + self.serialPort.readline();
 
-            self.pack()
-            self.createWidgets()
-            self.updateChart()
-        except serial.SerialException:
-            tkMessageBox.showerror("HSU Connection Error", "Error connecting to HSU")
-            self.master.destroy()
+        self.pack()
+        self.createWidgets()
+
+        self.heartBeats.append(int(self.getBPM()))
+        self.heartBeats.append(int(self.getBPM()))
+        
+        self.O2.append(int(self.getO2()))
+        self.O2.append(int(self.getO2()))
+        self.updateChart()
+
+        #time.sleep(2)
+                
+        #except serial.SerialException:
+            #tkMessageBox.showerror("HSU Connection Error", "Error connecting to HSU")
+            #self.master.destroy()
     
     def createWidgets(self):
         self.lblPulse = Label(self.master, text = "Pulse: 0 bpm")
@@ -49,3 +60,11 @@ class MainForm(Frame):
         self.heartRateCanvasWidget = self.heartRateCanvas.get_tk_widget()
         self.heartRateCanvasWidget.pack()
         self.heartRateCanvasWidget.place(x = 10, y = 80)
+
+    def getBPM(self):
+        self.serialPort.write("\xB1")
+        return self.serialPort.readline().rstrip()
+
+    def getO2(self):
+        self.serialPort.write("\xB2")
+        return self.serialPort.readline().rstrip()

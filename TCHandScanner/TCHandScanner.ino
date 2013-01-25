@@ -1,36 +1,47 @@
-int pulsePin = 0;                 // Pulse Sensor purple wire connected to analog pin 0
-int blinkPin = 13;                // pin to blink led at each beat
-int fadePin = 5;                  // pin to do fancy classy fading blink at each beat
+#include <SoftwareSerial.h>
 
-volatile int BPM;                   // used to hold the pulse rate
-volatile int Signal;                // holds the incoming raw data
-volatile int IBI = 600;             // holds the time between beats, the Inter-Beat Interval
-volatile boolean Pulse = false;     // true when pulse wave is high, false when it's low
-volatile boolean QS = false;        // becomes true when Arduoino finds a beat.
+SoftwareSerial btConnection = SoftwareSerial(2, 3);
 
 void setup()
 {
   Serial.begin(9600);
-  
-  pinMode(blinkPin, OUTPUT);         // pin that will blink to your heartbeat!
-  pinMode(fadePin, OUTPUT);          // pin that will fade to your heartbeat!
-  
-  interruptSetup();
+  btConnection.begin(38400);
 }
 
 void loop()
 {
-  if (QS)
+  byte bCommand;
+  
+  if (btConnection.available())
   {
-    Serial.print("BPM: ");
-    Serial.println(BPM);
-    Serial.print("IBI: ");
-    Serial.println(IBI);
-    delay(1500);
-  }
-  else
-  {
-    Serial.println("No Contact");
-    delay(1500);
+    bCommand = btConnection.read();
+    Serial.println(bCommand);
+    switch (bCommand)
+    {
+      case 0xA1:
+        //Ident Command
+        btConnection.println("Medical TriCorder HSU v1.0");
+        break;
+      case 0xA2:
+        //Change PIN Command
+        break;
+      case 0xB1:
+        //Return BPM
+        btConnection.println(random(72, 118)); //Random BPM for testing
+        break;
+      case 0xB2:
+        //Return O2 Sat
+        btConnection.println(random(92, 100)); //Random O2 sat for testing
+        break;
+      case 0xB3:
+        //Return Temp
+        btConnection.println((float)random((float)98.3, (float)103.6)); //Random temp for testing
+        break;
+      case 0xB4:
+        //Return vital array
+        break;
+      default:
+        break;
+    }
   }
 }

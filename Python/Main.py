@@ -6,11 +6,8 @@ import tkMessageBox
 from Tkinter import *
 from serial.tools import list_ports
 
-selectedHSUPort = ''
-
 def main():
     showSetup()
-    showMainForm()
     
 def showSetup():
     height = 250
@@ -24,21 +21,19 @@ def showSetup():
     setupApp.master.maxsize(width, height)
     setupApp.mainloop()
 
-    selectedHSUPort = setupApp.selectedPort
-
-    if (selectedHSUPort == ''):
+    if (setupApp.selectedPort == ''):
         tkMessageBox.showinfo("HSU Error", "You must selected a valid HSU port")
         showSetup()
     else:
-        showMainForm()
+        showMainForm(setupApp.selectedPort)
     
-def showMainForm():
+def showMainForm(serialPort):
     height = 500
     width = 600
     
     try:
         root = Tk()
-        app = MainForm.MainForm(master = root, serialPort = selectedHSUPort)
+        app = MainForm.MainForm(master = root, serialPort = serialPort)
         app.master.title("Medical TriCorder - Connected to Hand Scanner Unit")
         app.master.geometry(str(width) + "x" + str(height))
         app.master.minsize(width, height)
