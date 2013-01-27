@@ -7,7 +7,7 @@ int btPowerPIN = 7;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(38400);
   
   if (EEPROM.read(0) == 1)
   {

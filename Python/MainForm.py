@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 class MainForm(Frame):
     def __init__(self, master, serialPort):
         Frame.__init__(self, master)
-
+        hsuReady = False
         self.heartBeats = []
         self.O2 = []
 
@@ -16,6 +16,13 @@ class MainForm(Frame):
 
         #try:
         self.serialPort = serial.Serial(self.selectedSerialPort, 38400, timeout = 1)
+
+        while (not hsuReady):
+            data = self.serialPort.readline()
+
+            if ("RDY" in data):
+                hsuReady = True
+        
         self.serialPort.write("\xA1")
         self.hsuModel = self.serialPort.readline();
 
@@ -69,20 +76,26 @@ class MainForm(Frame):
         
         self.updateChart()
         
-        self.lblPulse.config(text = "Pulse: " + latestBPM + " BPM")
-        self.lblO2.config(text = "SpO2: " + latestSPO2 + "%")
-        self.lblTemp.config(text = "Temp: " + latestTemp + u" \N{DEGREE SIGN}F")
+        self.lblPulse.config(text = "Pulse: " + str(latestBPM) + " BPM")
+        self.lblO2.config(text = "SpO2: " + str(latestSPO2) + "%")
+        self.lblTemp.config(text = "Temp: " + str(latestTemp) + u" \N{DEGREE SIGN}F")
         
         self.after(1000, self.updateData)        
         
     def getBPM(self):
         self.serialPort.write("\xB1")
-        return self.serialPort.readline().rstrip()
+        readBPM = self.serialPort.readline().rstrip()
+        
+        return int(readBPM)
 
     def getO2(self):
         self.serialPort.write("\xB2")
-        return self.serialPort.readline().rstrip()
+        readO2 = self.serialPort.readline().rstrip()
+        
+        return int(readO2)
 
     def getTemp(self):
         self.serialPort.write("\xB3")
-        return self.serialPort.readline().rstrip()        
+        readTemp = self.serialPort.readline().rstrip()
+        
+        return float(readTemp)
