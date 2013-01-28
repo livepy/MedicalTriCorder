@@ -30,6 +30,7 @@ void setup()
     Serial.println("RDY BT ON");
     analogWrite(btPowerPIN, 255);
     btConnection.begin(38400);
+	btConnection.println("RDY BT ON");
   }
 }
 

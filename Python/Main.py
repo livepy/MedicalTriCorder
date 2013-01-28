@@ -10,8 +10,12 @@ def main():
     showSetup()
     
 def showSetup():
-    height = 250
-    width = 500
+    if (os.name == "nt"):
+        height = 250
+        width = 400
+    else:
+        height = 250
+        width = 500
     
     root = Tk()
     setupApp = BTSetup.BTSetup(master = root)

@@ -16,12 +16,13 @@ class MainForm(Frame):
 
         #try:
         self.serialPort = serial.Serial(self.selectedSerialPort, 38400, timeout = 1)
+        print "Waiting for HSU to Become Ready"
+        #while (not hsuReady):
+            #data = self.serialPort.readline()
 
-        while (not hsuReady):
-            data = self.serialPort.readline()
-
-            if ("RDY" in data):
-                hsuReady = True
+            #if ("RDY" in data):
+                #print "HSU Ready"
+                #hsuReady = True
         
         self.serialPort.write("\xA1")
         self.hsuModel = self.serialPort.readline();
@@ -54,23 +55,25 @@ class MainForm(Frame):
         self.lblModel.place(x = 15, y = 490)
 	
     def updateChart(self):
-        heartRateFigure = Figure(figsize=(7, 5))
-        bpmPlot = heartRateFigure.add_subplot(111, title="Heart Rate (BPM) & SpO2(%)", xlabel = "Time", axisbg="black")
-        bpmObject, = bpmPlot.plot(self.heartBeats, color='red')
-        o2Object, = bpmPlot.plot(self.O2, color='yellow')
+        vitalSignsFigure = Figure(figsize=(7, 5))
+        vitalPlot = vitalSignsFigure.add_subplot(111, title="Heart Rate (BPM) & SpO2(%)", xlabel = "Time", axisbg="black")
+        bpmObject, = vitalPlot.plot(self.heartBeats, color='red')
+        o2Object, = vitalPlot.plot(self.O2, color='yellow')
         #bpmPlot.legend([bpmObject, o2Object], ["BPM", "O2"], "best")
         
-        self.heartRateCanvas = FigureCanvasTkAgg(heartRateFigure, master=self.master)
-        self.heartRateCanvas.show()
-        self.heartRateCanvasWidget = self.heartRateCanvas.get_tk_widget()
-        self.heartRateCanvasWidget.pack()
-        self.heartRateCanvasWidget.place(x = 10, y = 80)
+        self.vitalSignsCanvas = FigureCanvasTkAgg(vitalSignsFigure, master=self.master)
+        self.vitalSignsCanvas.show()
+        self.vitalSignsCanvas = self.vitalSignsCanvas.get_tk_widget()
+        self.vitalSignsCanvas.pack()
+        self.vitalSignsCanvas.place(x = 10, y = 80)
+
+        print str(len(self.heartBeats))
 		
     def updateData(self):
         latestBPM = self.getBPM()
         latestSPO2 = self.getO2()
         latestTemp = self.getTemp()
-
+        
         self.heartBeats.append(latestBPM)
         self.O2.append(latestSPO2)
         
@@ -85,17 +88,26 @@ class MainForm(Frame):
     def getBPM(self):
         self.serialPort.write("\xB1")
         readBPM = self.serialPort.readline().rstrip()
-        
+
+        if (readBPM == ''):
+            readBPM = 0
+
         return int(readBPM)
 
     def getO2(self):
         self.serialPort.write("\xB2")
         readO2 = self.serialPort.readline().rstrip()
+
+        if (readO2 == ''):
+            readO2 = 0
         
         return int(readO2)
 
     def getTemp(self):
         self.serialPort.write("\xB3")
         readTemp = self.serialPort.readline().rstrip()
+
+        if (readTemp == ''):
+            readTemp = 0
         
         return float(readTemp)
