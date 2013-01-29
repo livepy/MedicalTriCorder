@@ -15,7 +15,8 @@ void setup()
 {
   size(600, 520);
   frame.setTitle("Medical TriCorder");
-  
+  //TODO: Create icon for Mac (icns file) and detect OS type. Below line will only work on Windows/Linux
+  frame.setIconImage( getToolkit().getImage("tricorder.ico") );
   cp5 = new ControlP5(this);
   
   dlSerialPort = cp5.addDropdownList("dlSerialPort")
@@ -72,11 +73,23 @@ void cmdConnect()
 {
   if (initComplete)
   {
-    HSUConnection = new Serial(this, dlSerialPort.item((int)dlSerialPort.getValue()).getName(), 38400);
+    if (cmdConnect.captionLabel().getText() == "Connect to HSU")
+    {
+      HSUConnection = new Serial(this, dlSerialPort.item((int)dlSerialPort.getValue()).getName(), 38400);
+      HSUConnection.write(0xA1);
+      cmdConnect.captionLabel().set("Disconnect from HSU");
+    }
+    else
+    {
+      HSUConnection.stop();
+      cmdConnect.captionLabel().set("Connect to HSU");
+      lblHSUModel.setText("HSU Model:");
+    }
   }
 }
 
 void serialEvent(Serial p)
 {
-
+  String sData = p.readStringUntil('\n');
+  lblHSUModel.setText("HSU Model: " + sData);
 }
