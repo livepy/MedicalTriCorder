@@ -15,6 +15,7 @@ private Serial HSUConnection;
 private int lastRequest;
 private String sHSUModel;
 private ControlTimer controlTimer;
+private String sStatus = "NONE";
 
 void setup()
 {
@@ -84,15 +85,27 @@ void draw()
   {
     if (time >= 1)
     {
-      getBPM();
-      println("noLoop BPM");
-      noLoop();
-      getSPO2();
-      println("noLoop SPo2");
-      noLoop();
-      getTemp();
-      println("noLoop TEMP");
-      noLoop();
+      //Determine a better way to do this. Maybe get VPs working?
+      if (sStatus == "NONE")
+      {
+        getBPM();
+      }
+      
+      if (sStatus == "BPM")
+      {
+        getSPO2();
+      }
+      
+      if (sStatus == "SPO2")
+      {      
+        getTemp();
+      }
+      
+      if (sStatus == "TEMP")
+      {
+        sStatus = "NONE";
+      }
+      
       controlTimer.reset();
     }
   }
@@ -117,6 +130,9 @@ void cmdConnect()
       bConnectedToHSU = false;
       controlTimer.reset();
       cmdConnect.captionLabel().set("Connect to HSU");
+      lblPulse.setText("Pulse: ");
+      lblSpO2.setText("SpO2: ");
+      lblTemp.setText("Temp: ");
       lblHSUModel.setText("HSU Model:");
     }
   }
@@ -156,15 +172,15 @@ void serialEvent(Serial p)
       break;
     case LastRequest.BPM:
       lblPulse.setText("Pulse: " + sData + " BPM");
-      loop();
+      sStatus = "BPM";
       break;
     case LastRequest.SPO2:
       lblSpO2.setText("SpO2: " + sData + "%");
-      loop();
+      sStatus = "SPO2";
       break;
     case LastRequest.Temp:
       lblTemp.setText("Temp: " + sData + " F");
-      loop();
+      sStatus = "TEMP";
       break;
     default:
       break;
