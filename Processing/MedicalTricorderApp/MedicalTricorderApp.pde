@@ -1,54 +1,82 @@
 import processing.serial.*;
 import controlP5.*;
 
-ControlP5 cp5;
-ListBox serialList;
-String[] sPortList;
+private ControlP5 cp5;
+private DropdownList dlSerialPort;
+private Button cmdConnect;
+private Textlabel lblPulse;
+private Textlabel lblSpO2;
+private Textlabel lblTemp;
+private Textlabel lblHSUModel;
+private boolean initComplete = false;
+private Serial HSUConnection;
 
 void setup()
 {
   size(600, 520);
- 
-  cp5 = new ControlP5(this);
-  sPortList = Serial.list();
+  frame.setTitle("Medical TriCorder");
   
-  serialList = cp5.addListBox("lstSerialPorts")
+  cp5 = new ControlP5(this);
+  
+  dlSerialPort = cp5.addDropdownList("dlSerialPort")
     .setPosition(10, 20)
-    .setSize(120, 120)
+    .setSize(250, 50)
     .setBarHeight(15)
     .setItemHeight(15);
+    
+  dlSerialPort.captionLabel().set("Available Serial Ports");
+  dlSerialPort.captionLabel().style().marginTop = 3;
+  dlSerialPort.valueLabel().style().marginTop = 3;
   
-  serialList.captionLabel().set("Available Serial Ports");
-  serialList.captionLabel().style().marginTop = 3;
-  serialList.valueLabel().style().marginTop = 3;
+  dlSerialPort.setItemHeight(20);
+  dlSerialPort.setBarHeight(15);
+  dlSerialPort.captionLabel().style().marginTop = 3;
+  dlSerialPort.captionLabel().style().marginLeft = 3;
+  dlSerialPort.valueLabel().style().marginTop = 3;
   
-  for (int i = 0; i < sPortList.length; i++)
-  {
-    serialList.addItem(sPortList[i], i);
-  }
-}
+  cmdConnect = cp5.addButton("cmdConnect")
+    .setValue(0)
+    .setPosition(280, 4)
+    .setSize(100, 15);
 
-void controlEvent(ControlEvent theEvent) 
-{
-  if (theEvent.isGroup()) 
-  {
-    // an event from a group e.g. scrollList
-    println(theEvent.group().value()+" from "+theEvent.group());
-  }
+  cmdConnect.captionLabel().set("Connect to HSU");
   
-  if(theEvent.isGroup() && theEvent.name().equals("serialList"))
-  {
-    int test = (int)theEvent.group().value();
-    println("Selected Index: " + test);
-  }
+  dlSerialPort.addItems(Serial.list());
+  
+  lblPulse = cp5.addTextlabel("lblPulse")
+    .setPosition(10, 65)
+    .setText("Pulse: ");
+    
+  lblSpO2 = cp5.addTextlabel("lblSpO2")
+    .setPosition(10, 80)
+    .setText("SpO2: ");
+    
+  lblTemp = cp5.addTextlabel("lblTemp")
+    .setPosition(10, 95)
+    .setText("Temp: ");
+  
+  lblHSUModel = cp5.addTextlabel("lblHSUModel")
+    .setPosition(10, 500)
+    .setText("HSU Model: ");
+    
+  initComplete = true;
 }
 
 void draw() 
 {
   background(128);
-  
-  if (keyPressed && key==' ') 
+  line(0, 40, 620, 40);
+}
+
+void cmdConnect()
+{
+  if (initComplete)
   {
-    serialList.setWidth(mouseX);
+    HSUConnection = new Serial(this, dlSerialPort.item((int)dlSerialPort.getValue()).getName(), 38400);
   }
+}
+
+void serialEvent(Serial p)
+{
+
 }
