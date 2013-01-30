@@ -18,10 +18,15 @@ def showSetup():
         width = 500
     
     root = Tk()
+    root.protocol('WM_DELETE_WINDOW', exitApplication)
+    root.resizable(0,0)
+    
+    #root.iconbitmap("tricorder.png")
     setupApp = BTSetup.BTSetup(master = root)
     setupApp.master.title("Medical TriCorder - Setup")
-    setupApp.master.wm_iconbitmap("tricorder.ico")
-    setupApp.master.geometry(str(width) + "x" + str(height))
+    xp = (root.winfo_screenwidth() / 2) - (width / 2) - 8
+    yp = (root.winfo_screenheight() / 2) - (height / 2) - 8
+    setupApp.master.geometry("{0}x{1}+{2}+{3}".format(str(width), str(height), xp, yp))
     setupApp.master.minsize(width, height)
     setupApp.master.maxsize(width, height)
     setupApp.mainloop()
@@ -33,20 +38,25 @@ def showSetup():
         showMainForm(setupApp.selectedPort)
     
 def showMainForm(serialPort):
-    height = 520
-    width = 600
-    
-    #try:
+    height = 130
+    width = 300
+
     root = Tk()
+    root.protocol('WM_DELETE_WINDOW', exitApplication)
+    root.resizable(0,0)
+    
+    #root.iconbitmap("tricorder.png")
     app = MainForm.MainForm(master = root, serialPort = serialPort)
-    app.master.title("Medical TriCorder - Connected to Hand Scanner Unit")
-    app.master.wm_iconbitmap("tricorder.ico")
-    app.master.geometry(str(width) + "x" + str(height))
+    app.master.title("Medical TriCorder")
+    xp = (root.winfo_screenwidth() / 2) - (width / 2) - 8
+    yp = (root.winfo_screenheight() / 2) - (height / 2) - 8
+    app.master.geometry("{0}x{1}+{2}+{3}".format(str(width), str(height), xp, yp))
     app.master.minsize(width, height)
     app.master.maxsize(width, height)
     app.mainloop()
-    #except:
-        #pass
 
+def exitApplication():
+    os._exit(0)
+    
 if __name__ == "__main__":
     main()

@@ -41,53 +41,27 @@ serialPort = serial.Serial(selectedPort, 38400, timeout = 1)
 
 print "HSU Emulator started on " + selectedPort
 
+print ""
+
 while (True):
-    commandByte = serialPort.read()
-    
-    #if (not serialCon):
-        #if (bluetoothOn):
-            #serialPort.write("RDY BT ON\n")
-        #else:
-            #serialPort.write("RDY BT OFF\n")
-            
-    if (commandByte == "\xF0"):
-        #Return BT Status
-        serialCon = True
-        if (bluetoothOn):
-            serialPort.write("BT ON\n")
-        else:
-            serialPort.write("BT OFF\n")
-    elif (commandByte == "\xF1"):
-        #Turn BT On
-        serialCon = True
-        serialPort.write("OK BT ON\n")
-        bluetoothOn = True
-    elif (commandByte == "\xF2"):
-        #Turn BT Off
-        serialCon = True
-        serialPort.write("OK BT OFF\n")
-        bluetoothOn = False
-    elif (commandByte == "\xA1"):
-        #Send Ident
-        serialCon = True
-        serialPort.write("Medical TriCorder HSU EMU v1.0\n")
-    elif (commandByte == "\xA2"):
-        #Set PIN
-        serialCon = True
-        serialPort.write("OK PIN SET\n")
-    elif (commandByte == "\xB1"):
-        #Return BPM
-        serialCon = True
-        serialPort.write(str(random.randint(72, 85)) + "\n")
-    elif (commandByte == "\xB2"):
-        #Return SpO2
-        serialCon = True
-        serialPort.write(str(random.randint(90, 100)) + "\n")
-    elif (commandByte == "\xB3"):
-        #Return Temp
-        serialCon = True
-        serialPort.write(str(random.randint(98, 101)) + "\n")
-    elif (commandByte == "\xB4"):
-        #Return Vital Packet
-        serialCon = True
-        serialPort.write("Not Implemented (VP)\n")
+    print "1 - Send Scanning Command"
+    print "2 - Send Scanning Complete & Vitals"
+    print "3 - Stop HSU Emulation"
+    print ""
+    userOption = raw_input("Select an option: ");
+
+    if (userOption == "1"):
+        #Scanning
+        serialPort.write("SCN\n")
+    elif (userOption == "2"):
+        #Scanning Complete
+        #Return ACK,BPM,Sp02,Temp
+        sReturn = "ACK" + "," + str(random.randint(72, 85)) + "," + str(random.randint(90, 100)) + "," + str(random.randint(98, 101)) + "\n"
+        serialPort.write(sReturn)
+    elif (userOption == "3"):
+        #Exit
+        serialPort.close()
+        os._exit(0);
+    else:
+        print "Invalid Option!"
+        print ""
