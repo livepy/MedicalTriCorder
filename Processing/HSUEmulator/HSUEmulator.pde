@@ -21,7 +21,7 @@ public class HSUEmulator extends PApplet
   
   void setup()
   {
-    size(400, 250);
+    size(400, 130);
     
     frame.setTitle(sEmulatorName);
     
@@ -35,27 +35,20 @@ public class HSUEmulator extends PApplet
     cp5 = new ControlP5(this);
     //cp5.setControlFont(createFont("Arial", 8));
   
-    dlSerialPort = cp5.addDropdownList("dlSerialPort")
-      .setPosition(10, 20)
-      .setSize(250, 120)
-      .setBarHeight(15)
-      .setItemHeight(15);
-      
-    dlSerialPort.captionLabel().set("Available Serial Ports");
-    dlSerialPort.captionLabel().style().marginTop = 3;
-    dlSerialPort.valueLabel().style().marginTop = 3;
-    
-    dlSerialPort.setItemHeight(20);
+    dlSerialPort = cp5.addDropdownList("dlSerialPort");
+    dlSerialPort.setPosition(10, 20);
+    dlSerialPort.setSize(250, 120);
     dlSerialPort.setBarHeight(15);
+    dlSerialPort.setItemHeight(20);
+    dlSerialPort.captionLabel().set("Available Serial Ports");
     dlSerialPort.captionLabel().style().marginTop = 3;
     dlSerialPort.captionLabel().style().marginLeft = 3;
     dlSerialPort.valueLabel().style().marginTop = 3;
     
-    cmdConnect = cp5.addButton("cmdConnect")
-       .setValue(0)
-       .setPosition(280, 4)
-       .setSize(100, 15);
-  
+    cmdConnect = cp5.addButton("cmdConnect");
+    cmdConnect.setValue(0);
+    cmdConnect.setPosition(280, 4);
+    cmdConnect.setSize(100, 15);
     cmdConnect.captionLabel().set("Start HSU Emulator");
     
     dlSerialPort.addItems(Serial.list());
@@ -88,6 +81,7 @@ public class HSUEmulator extends PApplet
   void serialEvent(Serial p)
   {
     int dataByte = p.read();
+    String sReturn = "";
     
     switch (dataByte)
     {
@@ -132,7 +126,9 @@ public class HSUEmulator extends PApplet
         break;
       case 0xB4:
         //Return Vital Packet
-        HSUPort.write("Not Implemented (VP)\n");
+        sReturn += (int)random(72, 85) + "," + (int)random(90, 100) + "," + random(98.0, 101.0) + "\n";
+
+        HSUPort.write(sReturn);
         break;
       default:
         break;    
