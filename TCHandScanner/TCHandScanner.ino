@@ -120,7 +120,8 @@ void serialEvent()
         bUseLocalSerial = false;
         EEPROM.write(0, 1);
         analogWrite(btPowerPIN, 255);
-        Serial.println("OK BT ON");   
+        Serial.println("OK BT ON");
+        btConnection.begin(38400);   
         break;
       case 0xF2:
         //Turn BT Off
@@ -128,6 +129,7 @@ void serialEvent()
         EEPROM.write(0, 0);
         analogWrite(btPowerPIN, 0);
         Serial.println("OK BT OFF");
+        btConnection.end();
         break;          
       case 0xA1:
         //Ident Command
