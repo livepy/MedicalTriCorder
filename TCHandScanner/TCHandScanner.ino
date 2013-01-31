@@ -4,6 +4,7 @@
 SoftwareSerial btConnection = SoftwareSerial(2, 3);
 boolean bUseLocalSerial = false;
 int btPowerPIN = 7;
+int scanButton = 4;
 
 void setup()
 {
@@ -19,7 +20,8 @@ void setup()
   }
   
   pinMode(btPowerPIN, OUTPUT);
-          
+  pinMode(scanButton, INPUT);
+  
   if (bUseLocalSerial)
   {
     Serial.println("RDY BT OFF");
@@ -30,13 +32,27 @@ void setup()
     Serial.println("RDY BT ON");
     analogWrite(btPowerPIN, 255);
     btConnection.begin(38400);
-	btConnection.println("RDY BT ON");
+    btConnection.println("RDY BT ON");
   }
 }
 
 void loop()
 {
   byte bCommand;
+  
+  if (digitalRead(scanButton))
+  {
+    if (bUseLocalSerial)
+    {
+      Serial.println("SCN");
+      getSensorData();
+    }
+    else
+    {
+      btConnection.println("SCN");
+      getSensorData();
+    }
+  }
   
   if (btConnection.available())
   {
@@ -51,24 +67,30 @@ void loop()
       case 0xA2:
         //Change PIN Command
         break;
-      case 0xB1:
-        //Return BPM
-        btConnection.println(random(72, 118)); //Random BPM for testing
-        break;
-      case 0xB2:
-        //Return O2 Sat
-        btConnection.println(random(92, 100)); //Random O2 sat for testing
-        break;
-      case 0xB3:
-        //Return Temp
-        btConnection.println((float)random((float)98.3, (float)103.6)); //Random temp for testing btConnection.println((float)random((float)98.3, (float)103.6)); //Random temp for testing
-        break;
-      case 0xB4:
-        //Return vital array
-        break;
       default:
         break;
     }
+  }
+}
+
+void getSensorData()
+{
+  //THIS IS ALL SIMULATED
+  delay(1500);
+  int iBPM = random(72, 85);
+  int SpO2 = random(90, 100);
+  int Temp = random(98, 101);
+  String sReturn;
+  
+  sReturn = "ACK," + (String)iBPM + "," + (String)SpO2 + "," + (String)Temp;
+  
+  if (bUseLocalSerial)
+  {
+    Serial.println(sReturn);
+  }
+  else
+  {
+    btConnection.println(sReturn);
   }
 }
 
@@ -113,21 +135,6 @@ void serialEvent()
         break;
       case 0xA2:
         //Change PIN Command
-        break;
-      case 0xB1:
-        //Return BPM
-        Serial.println(random(72, 118)); //Random BPM for testing
-        break;
-      case 0xB2:
-        //Return O2 Sat
-        Serial.println(random(92, 100)); //Random O2 sat for testing
-        break;
-      case 0xB3:
-        //Return Temp
-        Serial.println((float)random((float)98.3, (float)103.6)); //Random temp for testing btConnection.println((float)random((float)98.3, (float)103.6)); //Random temp for testing
-        break;
-      case 0xB4:
-        //Return vital array
         break;
       default:
         break;
