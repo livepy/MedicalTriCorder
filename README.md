@@ -9,5 +9,3 @@ The goal of the Medical TriCorder is to create a fast, efficent, and open source
 
 The HSU is the main device of this project and will gather Beats Per Minute, SpO2, and Tempature of a patient and transmit it back to the TriCorder application for easy readout.
 
-- [ ] My uncompleted list item
-- [x] This one is already done
