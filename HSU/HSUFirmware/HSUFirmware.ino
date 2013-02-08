@@ -2,9 +2,9 @@
 #include <i2cmaster.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial btConnection = SoftwareSerial(2, 3);
+SoftwareSerial btConnection = SoftwareSerial(3, 4);
 boolean bUseLocalSerial = false;
-int scanButton = 4;
+int scanButton = 5;
 int btPowerPIN = 13;
 int redRGBLEDPIN = 6;
 int greenRGBLEDPIN = 7;
