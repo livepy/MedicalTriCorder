@@ -5,7 +5,7 @@
 SoftwareSerial btConnection = SoftwareSerial(2, 3);
 boolean bUseLocalSerial = false;
 int scanButton = 4;
-int btPowerPIN = 5;
+int btPowerPIN = 13;
 int redRGBLEDPIN = 6;
 int greenRGBLEDPIN = 7;
 int blueRGBLEDPIN = 8;
